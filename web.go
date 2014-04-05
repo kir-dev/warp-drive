@@ -39,14 +39,16 @@ func uploadPage(w http.ResponseWriter, r *http.Request) {
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("image")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		renderTemplate(w, "upload", map[string]string{"FormError": "Could not upload file."})
 		return
 	}
 	defer file.Close()
 
 	if err = saveFile(r.FormValue("title"), file, header); err != nil {
 		log.Printf("Error while saving image: %v", err)
-		http.Error(w, "Could not save image.", http.StatusBadRequest)
+		renderTemplate(w, "upload", map[string]string{
+			"FormError": "Could not upload file: " + err.Error(),
+		})
 	} else {
 		// TODO: redirect to image
 		fmt.Fprint(w, "Success!")
