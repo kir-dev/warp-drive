@@ -11,7 +11,7 @@ import (
 
 var (
 	config configuration
-	db     sql.DB
+	db     *sql.DB
 	env    environment
 )
 
@@ -24,11 +24,12 @@ func main() {
 	env = environment(*env0)
 	config = loadConfiguration(*configPath)
 
-	db, err := sql.Open("postgres", fmt.Sprintf("dbname=%s port=%s user=%s password=%s", config.Db.Name, config.Db.Port, config.Db.User, config.Db.Pass))
+	var err error
+	db, err = sql.Open("postgres", fmt.Sprintf("dbname=%s port=%s user=%s password=%s", config.Db.Name, config.Db.Port, config.Db.User, config.Db.Pass))
 	db.SetMaxIdleConns(config.Db.Pool)
 	db.SetMaxOpenConns(config.Db.Pool)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
 
 	log.Printf("Started on %s port", *port)
