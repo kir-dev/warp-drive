@@ -10,7 +10,7 @@ type dbConfiguration struct {
 	Name string
 	User string
 	Pass string
-	Pool int32
+	Pool int
 }
 
 type configuration struct {
