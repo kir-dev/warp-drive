@@ -106,6 +106,10 @@ func resizeImage(path string, width int) (string, error) {
 		}
 		defer out.Close()
 
+		if out.Chmod(0644) != nil {
+			return "", err
+		}
+
 		err = jpeg.Encode(out, newImg, nil)
 		if err != nil {
 			return "", err
