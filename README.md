@@ -8,8 +8,8 @@ images in a git repo is not a lot of fun.
 
 It stores images in the file system, while metadata is in a database. We are
 using postgres. There is a simple page for uploading and searching images. Every
-image can be linked by its unique url and an optional widht can be provided. If
-a width is provided then the image will be resized and the aspect ration will be
+image can be linked by its unique url and an optional width can be provided. If
+a width is provided then the image will be resized and the aspect ratio will be
 kept. If the width is greater than the original with then the original size will
 be used.
 
@@ -76,9 +76,9 @@ It creates a new executable named `warp`. To run it simply:
 
 TODO
 
-## Committing
+## Contributing
 
-When commiting go code **always** use the `go fmt` tool first. Possibly one could
+When committing go code **always** use the `go fmt` tool first. Possibly one could
 set up a pre-commit git-hook to automate this.
 
 Or you can do it manually:
