@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/bmizerany/pat"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -23,7 +25,7 @@ func init() {
 	// register routes
 	mux.Get("/upload", http.HandlerFunc(uploadPage))
 
-	http.Handle("/", mux)
+	http.Handle("/", loggerMiddlerware(mux))
 
 	// load templates
 	templates = template.Must(template.ParseGlob("template/*.html"))
@@ -33,8 +35,26 @@ func uploadPage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "upload", nil)
 }
 
+func loggerMiddlerware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Incoming request: [%s] %s", r.Method, r.URL.String())
+		h.ServeHTTP(w, r)
+	})
+}
+
 func renderTemplate(w http.ResponseWriter, name string, data interface{}) {
-	// TODO: re-read templates on every request in dev mode
+	if env.dev() {
+		tmpl := template.New(makeFullTemplateName(name))
+		tmpl, err := tmpl.ParseFiles("template/" + makeFullTemplateName(name))
+		if err != nil {
+			fmt.Fprintf(w, "Error in template:\n%s", err.Error())
+
+		} else {
+			tmpl.Execute(w, data)
+		}
+		return
+	}
+
 	if err := templates.ExecuteTemplate(w, makeFullTemplateName(name), data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

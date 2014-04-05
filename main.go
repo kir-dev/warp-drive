@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
@@ -11,13 +12,17 @@ import (
 var (
 	config configuration
 	db     sql.DB
+	env    environment
 )
 
 func main() {
-	println("Hello world!")
+	env0 := flag.String("env", "dev", "possible values: dev, prod, test")
+	configPath := flag.String("config", "config/config.json", "path of the confile file")
+	port := flag.String("port", ":8080", "port to run on")
+	flag.Parse()
 
-	// TODO: make path configrable by command line args
-	config = loadConfiguration("config/config.json")
+	env = environment(*env0)
+	config = loadConfiguration(*configPath)
 
 	db, err := sql.Open("postgres", fmt.Sprintf("dbname=%s port=%s user=%s password=%s", config.Db.Name, config.Db.Port, config.Db.User, config.Db.Pass))
 	db.SetMaxIdleConns(config.Db.Pool)
@@ -26,6 +31,6 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	// TODO: make port configurable
-	http.ListenAndServe(":8080", nil)
+	log.Printf("Started on %s port", *port)
+	http.ListenAndServe(*port, nil)
 }
