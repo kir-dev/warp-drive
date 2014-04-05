@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	config configuration
-	db     sql.DB
-	env    environment
+	config          configuration
+	db              sql.DB
+	env             environment
+	imageInsertStmt *sql.Stmt
 )
 
 func main() {
@@ -24,11 +25,16 @@ func main() {
 	env = environment(*env0)
 	config = loadConfiguration(*configPath)
 
-	db, err := sql.Open("postgres", fmt.Sprintf("dbname=%s port=%s user=%s password=%s", config.Db.Name, config.Db.Port, config.Db.User, config.Db.Pass))
+	db, err := sql.Open("postgres", fmt.Sprintf("dbname=%s port=%d user=%s password=%s", config.Db.Name, config.Db.Port, config.Db.User, config.Db.Pass))
 	db.SetMaxIdleConns(config.Db.Pool)
 	db.SetMaxOpenConns(config.Db.Pool)
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	imageInsertStmt, err = db.Prepare(ImageInsertSql)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	log.Printf("Started on %s port", *port)

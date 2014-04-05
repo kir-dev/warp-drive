@@ -24,6 +24,7 @@ func init() {
 
 	// register routes
 	mux.Get("/upload", http.HandlerFunc(uploadPage))
+	mux.Post("/upload", http.HandlerFunc(uploadHandler))
 
 	http.Handle("/", loggerMiddlerware(mux))
 
@@ -33,6 +34,23 @@ func init() {
 
 func uploadPage(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "upload", nil)
+}
+
+func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	if err = saveFile(r.FormValue("title"), file, header); err != nil {
+		log.Printf("Error while saving image: %v", err)
+		http.Error(w, "Could not save image.", http.StatusBadRequest)
+	} else {
+		// TODO: redirect to image
+		fmt.Fprint(w, "Success!")
+	}
 }
 
 func loggerMiddlerware(h http.Handler) http.Handler {
