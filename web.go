@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bmizerany/pat"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -16,7 +17,7 @@ const (
 )
 
 var (
-	templates *template.Template
+	templates map[string]*template.Template
 )
 
 func init() {
@@ -26,10 +27,15 @@ func init() {
 	mux.Get("/upload", http.HandlerFunc(uploadPage))
 	mux.Post("/upload", http.HandlerFunc(uploadHandler))
 
+	mux.Get("/", http.HandlerFunc(root))
 	http.Handle("/", loggerMiddlerware(mux))
 
 	// load templates
-	templates = template.Must(template.ParseGlob("template/*.html"))
+	templates = loadTemplates()
+}
+
+func root(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "index", nil)
 }
 
 func uploadPage(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +78,7 @@ func renderTemplate(w http.ResponseWriter, name string, data interface{}) {
 			return
 		}
 	} else {
-		tmpl = templates
+		tmpl = templates[makeFullTemplateName(name)]
 	}
 
 	if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
@@ -85,4 +91,22 @@ func makeFullTemplateName(name string) string {
 		return name + ".html"
 	}
 	return name
+}
+
+func loadTemplates() map[string]*template.Template {
+	const layoutTemplate = "template/layout.html"
+	files, err := ioutil.ReadDir("template")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	result := make(map[string]*template.Template)
+	for _, file := range files {
+		if file.Name() != "layout.html" {
+			result[file.Name()] = template.Must(
+				template.ParseFiles(layoutTemplate, "template/"+file.Name()))
+		}
+	}
+
+	return result
 }
