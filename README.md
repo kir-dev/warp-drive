@@ -93,4 +93,4 @@ We are using [godep](https://github.com/tools/godep) for managing dependencies,
 so you must have `godep` installed in your `PATH`.
 
 Use the [godep workflow](https://github.com/tools/godep#add-or-update-a-dependency)
-and commit the vendorized package source.
+and use the `-copy=false` option on save.
