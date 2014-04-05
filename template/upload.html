@@ -1,5 +1,25 @@
 {{define "content"}}
 
-<h1>upload</h1>
+<h1>Upload an image</h1>
+
+{{ if .FormError }}
+<div class="error">
+    {{.FormError}}
+</div>
+{{end}}
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <div class="form-field">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title">
+    </div>
+    <div class="form-field">
+        <label for="image">Image to upload:</label>
+        <input type="file" name="image" id="image">
+    </div>
+    <div class="form-submit">
+        <input type="submit" value="Upload">
+    </div>
+</form>
 
 {{end}}
