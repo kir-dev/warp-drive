@@ -47,7 +47,7 @@ func (img *imageRecord) saveToDb() error {
 }
 
 func (img *imageRecord) saveToDisk() error {
-	fullPath := filepath.Join(config.UploadPath, img.path())
+	fullPath := config.absolutePath(img.path())
 	dir := filepath.Dir(fullPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
