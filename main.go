@@ -19,7 +19,7 @@ func main() {
 	// TODO: make path configrable by command line args
 	config = loadConfiguration("config/config.json")
 
-	db, err := sql.Open("postgres", fmt.Sprintf("dbname=%s user=%s password=%s", config.Db.Name, config.Db.User, config.Db.Pass))
+	db, err := sql.Open("postgres", fmt.Sprintf("dbname=%s port=%s user=%s password=%s", config.Db.Name, config.Db.Port, config.Db.User, config.Db.Pass))
 	db.SetMaxIdleConns(config.Db.Pool)
 	db.SetMaxOpenConns(config.Db.Pool)
 	if err != nil {

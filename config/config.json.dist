@@ -4,6 +4,7 @@
         "name": "warp",
         "user": "warp",
         "pass": "almafa",
+        "port": 5432,
         "pool": 5
     }
 }

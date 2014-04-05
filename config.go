@@ -10,6 +10,7 @@ type dbConfiguration struct {
 	Name string
 	User string
 	Pass string
+	Port int
 	Pool int
 }
 
