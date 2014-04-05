@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	templates = template.New("root")
+	templates *template.Template
 )
 
 func init() {
@@ -43,19 +43,19 @@ func loggerMiddlerware(h http.Handler) http.Handler {
 }
 
 func renderTemplate(w http.ResponseWriter, name string, data interface{}) {
+	var tmpl *template.Template
 	if env.dev() {
-		tmpl := template.New(makeFullTemplateName(name))
-		tmpl, err := tmpl.ParseFiles("template/" + makeFullTemplateName(name))
+		var err error
+		tmpl, err = template.New("t").ParseFiles("template/layout.html", "template/"+makeFullTemplateName(name))
 		if err != nil {
-			fmt.Fprintf(w, "Error in template:\n%s", err.Error())
-
-		} else {
-			tmpl.Execute(w, data)
+			http.Error(w, fmt.Sprintf("Error in template:\n%s", err), http.StatusInternalServerError)
+			return
 		}
-		return
+	} else {
+		tmpl = templates
 	}
 
-	if err := templates.ExecuteTemplate(w, makeFullTemplateName(name), data); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "layout", data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
