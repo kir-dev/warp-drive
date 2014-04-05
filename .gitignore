@@ -1,0 +1,8 @@
+# quasar-bot executable
+warp
+warp.exe
+warp-drive
+warp-drive.exe
+
+# never commit your own config
+config.json

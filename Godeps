@@ -1,0 +1,5 @@
+{
+	"ImportPath": "warp-drive",
+	"GoVersion": "go1.2",
+	"Deps": []
+}

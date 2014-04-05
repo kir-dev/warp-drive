@@ -1,0 +1,9 @@
+{
+    "uploadPath": "/base/path/to/upload/images",
+    "db": {
+        "name": "warp",
+        "user": "warp",
+        "pass": "almafa",
+        "pool": 5
+    }
+}
