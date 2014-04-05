@@ -9,6 +9,10 @@
 		{
 			"ImportPath": "github.com/lib/pq",
 			"Rev": "f08bb026e0d6b644cad24d850d13352cc47400c5"
+		},
+		{
+			"ImportPath": "github.com/nfnt/resize",
+			"Rev": "8aee0d995b6511c4b52187d9b5b7f4da05bbae0b"
 		}
 	]
 }
