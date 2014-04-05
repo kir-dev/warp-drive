@@ -1,12 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/bmizerany/pat"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -24,10 +26,13 @@ func init() {
 	mux := pat.New()
 
 	// register routes
+	mux.Get("/", http.HandlerFunc(root))
 	mux.Get("/upload", http.HandlerFunc(uploadPage))
 	mux.Post("/upload", http.HandlerFunc(uploadHandler))
 
-	mux.Get("/", http.HandlerFunc(root))
+	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
+	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
+
 	http.Handle("/", loggerMiddlerware(mux))
 
 	// load templates
@@ -58,6 +63,30 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// TODO: redirect to image
 		fmt.Fprint(w, "Success!")
+	}
+}
+
+func getImageHandler(w http.ResponseWriter, r *http.Request) {
+	r.URL.Query().Add(":width", "0")
+	getImageHandlerWidth(w, r)
+}
+
+func getImageHandlerWidth(w http.ResponseWriter, r *http.Request) {
+	hash := r.URL.Query().Get(":hash")
+	width, err := strconv.Atoi(r.URL.Query().Get(":width"))
+
+	if err != nil {
+		width = 0
+	}
+
+	path, err := getImagePath(hash, width)
+	switch {
+	case err == nil:
+		http.ServeFile(w, r, path)
+	case err == sql.ErrNoRows:
+		http.NotFound(w, r)
+	default:
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 

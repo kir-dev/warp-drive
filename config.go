@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"path/filepath"
 )
 
 type dbConfiguration struct {
@@ -17,6 +18,10 @@ type dbConfiguration struct {
 type configuration struct {
 	UploadPath string
 	Db         dbConfiguration
+}
+
+func (c *configuration) absolutePath(path string) string {
+	return filepath.Join(c.UploadPath, path)
 }
 
 func loadConfiguration(configPath string) configuration {
