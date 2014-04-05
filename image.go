@@ -24,7 +24,11 @@ type imageRecord struct {
 }
 
 func (img *imageRecord) path() string {
-	return fmt.Sprintf("%s/%s%s", img.hash[0:2], img.hash, filepath.Ext(img.originalFilename))
+	return fmt.Sprintf("%s/%s/%s%s",
+		img.hash[0:2],
+		img.hash[0:8],
+		img.hash,
+		filepath.Ext(img.originalFilename))
 }
 
 func (img *imageRecord) save() error {
