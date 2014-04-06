@@ -25,6 +25,7 @@ var (
 
 const (
 	SearchImageByTitleStmt = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
+	WarpRealm              = "warp"
 )
 
 func init() {
@@ -32,8 +33,8 @@ func init() {
 
 	// register routes
 	mux.Get("/", http.HandlerFunc(root))
-	mux.Get("/upload", http.HandlerFunc(uploadPage))
-	mux.Post("/upload", http.HandlerFunc(uploadHandler))
+	mux.Get("/upload", basicAuth(WarpRealm, http.HandlerFunc(uploadPage)))
+	mux.Post("/upload", basicAuth(WarpRealm, http.HandlerFunc(uploadHandler)))
 
 	mux.Get("/search", http.HandlerFunc(searchPage))
 	mux.Get("/image/:hash", http.HandlerFunc(imagePage))

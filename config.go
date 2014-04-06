@@ -18,6 +18,8 @@ type dbConfiguration struct {
 type configuration struct {
 	UploadPath    string
 	ServerAddress string
+	User          string
+	Password      string
 	Db            dbConfiguration
 }
 
@@ -34,6 +36,10 @@ func loadConfiguration(configPath string) configuration {
 	var config configuration
 	if err = json.Unmarshal(data, &config); err != nil {
 		log.Fatal(err)
+	}
+
+	if config.User == "" || config.Password == "" {
+		log.Fatal("user and password are required in the config")
 	}
 
 	return config
