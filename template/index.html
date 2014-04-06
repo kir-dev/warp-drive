@@ -1,7 +1,7 @@
 {{define "content"}}
 <h1>hello world</h1>
-<form method="GET">
-		<input type="text" name="search-term"/>
+<form method="GET" action="/search">
+		<input type="text" name="q"/>
 		<input type="submit" value="search"/>
 </form>
 {{end}}

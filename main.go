@@ -16,6 +16,7 @@ var (
 	imageInsertStmt        *sql.Stmt
 	getImagePathStmt       *sql.Stmt
 	searchImageByTitleStmt *sql.Stmt
+	getImageByHashStmt     *sql.Stmt
 )
 
 func main() {
@@ -46,6 +47,11 @@ func main() {
 	}
 
 	searchImageByTitleStmt, err = db.Prepare(SearchImageByTitleStmt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	getImageByHashStmt, err = db.Prepare(ImageByHashSql)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -15,28 +15,30 @@ import (
 	"time"
 )
 
-func saveFile(title string, file multipart.File, header *multipart.FileHeader) error {
+// Saves the uploaded file to the disk and the database. Returns the hash of the
+// image and any error that occurred during the save.
+func saveFile(title string, file multipart.File, header *multipart.FileHeader) (string, error) {
 	if title == "" {
-		return errors.New("title missing")
+		return "", errors.New("title missing")
 	}
 	if !checkMimeType(header.Header["Content-Type"]) {
-		return errors.New("invalid content-type")
+		return "", errors.New("invalid content-type")
 	}
 
 	buff := new(bytes.Buffer)
 	if _, err := io.Copy(buff, file); err != nil {
-		return err
+		return "", err
 	}
 
 	imgData := buff.Bytes()
 	imgHash, err := hashImage(imgData)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	img, _, err := image.Decode(buff)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	newImg := imageRecord{
@@ -49,7 +51,7 @@ func saveFile(title string, file multipart.File, header *multipart.FileHeader) e
 		content:          imgData,
 	}
 
-	return newImg.save()
+	return imgHash, newImg.save()
 }
 
 func checkMimeType(contentType []string) bool {
