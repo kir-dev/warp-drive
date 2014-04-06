@@ -6,7 +6,7 @@ CREATE TABLE images (
     filepath        varchar,
     height          integer,
     width           integer,
-    hash            varchar,
+    hash            varchar UNIQUE,
     created_at      timestamp,
     PRIMARY KEY(id)
 );

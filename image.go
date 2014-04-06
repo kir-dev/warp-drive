@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/lib/pq"
 	"github.com/nfnt/resize"
 	"image"
 	"image/jpeg"
@@ -9,6 +11,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -40,9 +43,18 @@ func (img *imageRecord) save() error {
 	err1 := img.saveToDb()
 	err2 := img.saveToDisk()
 
-	if err1 != nil || err2 != nil {
-		return fmt.Errorf("Could not save to disk (%v) or to the database(%v),", err2, err1)
+	switch {
+	case err1 != nil:
+		if dbErr, ok := err1.(*pq.Error); ok {
+			if strings.Contains(dbErr.Message, "unique constraint") {
+				return errors.New("duplicate image")
+			}
+			return err1
+		}
+	case err2 != nil:
+		return err2
 	}
+
 	log.Printf("Saved image. Filename: %s, hash: %s", img.originalFilename, img.hash)
 	return nil
 }
