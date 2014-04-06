@@ -10,11 +10,12 @@ import (
 )
 
 var (
-	config           configuration
-	db               *sql.DB
-	env              environment
-	imageInsertStmt  *sql.Stmt
-	getImagePathStmt *sql.Stmt
+	config                 configuration
+	db                     *sql.DB
+	env                    environment
+	imageInsertStmt        *sql.Stmt
+	getImagePathStmt       *sql.Stmt
+	searchImageByTitleStmt *sql.Stmt
 )
 
 func main() {
@@ -40,6 +41,11 @@ func main() {
 	}
 
 	getImagePathStmt, err = db.Prepare(ImageGetPathSql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	searchImageByTitleStmt, err = db.Prepare(SearchImageByTitleStmt)
 	if err != nil {
 		log.Fatal(err)
 	}

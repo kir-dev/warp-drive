@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	_ "time"
 )
 
 const (
@@ -20,6 +21,10 @@ const (
 
 var (
 	templates map[string]*template.Template
+)
+
+const (
+	SearchImageByTitleStmt = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
 )
 
 func init() {
@@ -94,32 +99,42 @@ func getImageHandlerWidth(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchPage(w http.ResponseWriter, r *http.Request) {
-	searchTerm := "%" + r.URL.Query().Get("search-term") + "%"
-	sql := "SELECT title, hash FROM images WHERE LOWER(title) LIKE $1"
 
-	stmt, err := db.Prepare(sql)
-	if err != nil {
-		log.Fatal(err)
+	value := r.URL.Query().Get("q")
+	searchterm := "%" + value + "%"
+
+	data := make(map[string]imageRecord)
+
+	if value == "" {
+		renderTemplate(w, "search", data)
+		return
 	}
 
-	rows, err := stmt.Query(searchTerm)
+	rows, err := searchImageByTitleStmt.Query(searchterm)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Error when executing the query: %v", err)
+		fmt.Fprintf(w, "Sorry something went wrong...")
+		return
 	}
 
-	data := make(map[string]string)
+	/*
+		title            string
+		originalFilename string
+		height           int
+		width            int
+		hash             string
+	*/
 
 	for rows.Next() {
-		var title string
-		var hash string
+		var image imageRecord
 
-		if err := rows.Scan(&title, &hash); err != nil {
-			log.Fatal(err)
+		if err := rows.Scan(&image.Title, &image.OriginalFilename, &image.Height, &image.Width, &image.Hash); err != nil {
+			log.Printf("Error: %v", err)
+		} else {
+			log.Printf("matched query: " + image.Hash + " " + image.Title)
+
+			data[image.Hash] = image
 		}
-
-		log.Printf("matched query: " + hash + " " + title)
-
-		data[hash] = title
 	}
 
 	renderTemplate(w, "search", data)

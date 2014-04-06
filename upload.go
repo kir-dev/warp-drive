@@ -40,12 +40,12 @@ func saveFile(title string, file multipart.File, header *multipart.FileHeader) e
 	}
 
 	newImg := imageRecord{
-		title:            title,
-		originalFilename: header.Filename,
-		width:            img.Bounds().Size().X,
-		height:           img.Bounds().Size().Y,
-		hash:             imgHash,
-		created:          time.Now(),
+		Title:            title,
+		OriginalFilename: header.Filename,
+		Width:            img.Bounds().Size().X,
+		Height:           img.Bounds().Size().Y,
+		Hash:             imgHash,
+		Created:          time.Now(),
 		content:          imgData,
 	}
 

@@ -1,14 +1,14 @@
 {{define "content"}}
 	<h1>This is the search page</h1>
 	<form method="GET">
-		<input type="text" name="search-term"/>
+		<input type="text" name="q"/>
 		<input type="submit" value="search"/>
 	</form>
 
 	{{range $index, $element := .}}
 	<div>
 		<img src="/{{$index}}/300" alt="{{$element}}"/>
-		{{$element}}
+		{{$element.Title}}
 	</div>
 	{{end}}
 
