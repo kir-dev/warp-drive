@@ -30,11 +30,10 @@ func init() {
 	mux.Get("/upload", http.HandlerFunc(uploadPage))
 	mux.Post("/upload", http.HandlerFunc(uploadHandler))
 
+	mux.Get("/search", http.HandlerFunc(searchPage))
+
 	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
 	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
-
-	mux.Get("/search", http.HandlerFunc(searchPage))
-	mux.Post("/search", http.HandlerFunc(searchHandler))
 
 	mux.Get("/", http.HandlerFunc(root))
 	http.Handle("/", loggerMiddlerware(mux))
@@ -95,32 +94,35 @@ func getImageHandlerWidth(w http.ResponseWriter, r *http.Request) {
 }
 
 func searchPage(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "search", nil)
-}
-
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	value := "%" + r.FormValue("search") + "%"
-	sql := "SELECT title FROM images WHERE title LIKE $1"
+	searchTerm := "%" + r.URL.Query().Get("search-term") + "%"
+	sql := "SELECT title, hash FROM images WHERE LOWER(title) LIKE $1"
 
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	rows, err := stmt.Query(value)
+	rows, err := stmt.Query(searchTerm)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	data := make(map[string]string)
+
 	for rows.Next() {
 		var title string
-		if err := rows.Scan(&title); err != nil {
+		var hash string
+
+		if err := rows.Scan(&title, &hash); err != nil {
 			log.Fatal(err)
 		}
-		log.Printf(title, nil)
+
+		log.Printf("matched query: " + hash + " " + title)
+
+		data[hash] = title
 	}
 
-	fmt.Fprintf(w, "this stuff is crazy")
+	renderTemplate(w, "search", data)
 }
 
 func loggerMiddlerware(h http.Handler) http.Handler {
