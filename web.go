@@ -38,6 +38,8 @@ func init() {
 	mux.Get("/search", http.HandlerFunc(searchPage))
 	mux.Get("/image/:hash", http.HandlerFunc(imagePage))
 
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+
 	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
 	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
 

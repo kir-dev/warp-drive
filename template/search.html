@@ -1,17 +1,32 @@
 {{define "content"}}
-	<h1>This is the search page</h1>
-	<form method="GET">
-		<input type="text" name="q"/>
-		<input type="submit" value="search"/>
-	</form>
+<div class="jumbotron">
+	<h1>Search page</h1>
 
-	{{range $hash, $element := .}}
-	<div>
-		<a href="/image/{{$hash}}">
-			<img src="/{{$hash}}/300" alt="{{$element.Title}}"/>
-			{{$element.Title}}
-		</a>
+	<h2>Looking for an image? Search for it...</h2>
+
+	<form method="GET" role="form">
+	<div class="form-group">
+		<div class="col-xs-4">
+			<input id="search-field" type="text" name="q" class="form-control"/>
+		</div>
+		<div class="clearfix"></div>
 	</div>
-	{{end}}
+	<div class="form-group">
+		<div class="col-xs-4">
+			<input type="submit" value="search" class="btn btn-lg btn-primary btn-block"/>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	</form>
+<div>
+
+{{range $hash, $element := .}}
+<div class="jumbotron">
+	<a href="/image/{{$hash}}">
+		<img src="/{{$hash}}/300" alt="{{$element.Title}}"/>
+		{{$element.Title}}
+	</a>
+</div>
+{{end}}
 
 {{end}}

@@ -1,5 +1,5 @@
 {{define "content"}}
-
+<div class="jumbotron"> 
 <h1>Upload an image</h1>
 
 {{ if .FormError }}
@@ -8,18 +8,27 @@
 </div>
 {{end}}
 
-<form action="/upload" method="POST" enctype="multipart/form-data">
-    <div class="form-field">
-        <label for="title">Title:</label>
-        <input type="text" name="title" id="title">
+<form action="/upload" role="form" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title" class="form-control">
+        </div>
+        <div class="clearfix"></div>
     </div>
-    <div class="form-field">
-        <label for="image">Image to upload:</label>
-        <input type="file" name="image" id="image">
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="image">Image to upload:</label>
+            <input type="file" name="image" id="image">
+        </div>
+        <div class="clearfix"></div>
     </div>
-    <div class="form-submit">
-        <input type="submit" value="Upload">
+    <div class="form-group">
+        <div class="col-xs-4">
+            <input type="submit" value="Upload" class="btn btn-lg btn-primary btn-block">
+        </div>
+        <div class="clearfix"></div>
     </div>
 </form>
-
+<div>
 {{end}}
