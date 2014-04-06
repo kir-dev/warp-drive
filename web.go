@@ -64,14 +64,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if err = saveFile(r.FormValue("title"), file, header); err != nil {
+	imgHash, err := saveFile(r.FormValue("title"), file, header)
+	if err != nil {
 		log.Printf("Error while saving image: %v", err)
 		renderTemplate(w, "upload", map[string]string{
 			"FormError": "Could not upload file: " + err.Error(),
 		})
 	} else {
-		// TODO: redirect to image
-		fmt.Fprint(w, "Success!")
+		http.Redirect(w, r, fmt.Sprintf("/image/%s", imgHash), http.StatusFound)
 	}
 }
 
