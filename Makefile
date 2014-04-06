@@ -12,3 +12,6 @@ fmt:
 clean:
 	rm -f warp
 	go clean -r
+
+test:
+	godep go test

@@ -80,10 +80,6 @@ func getImagePath(hash string, width int) (string, error) {
 		return "", err
 	}
 
-	if filepath.Ext(path) == ".gif" {
-		return "", fmt.Errorf("resizing gifs are not supported")
-	}
-
 	if width <= 0 || width >= actualWidth {
 		return config.absolutePath(path), nil
 	}
@@ -94,6 +90,10 @@ func getImagePath(hash string, width int) (string, error) {
 // Resize the image if neccessary and save it. Returns the new path of the
 // resized image.
 func resizeImage(path string, width int) (string, error) {
+	if filepath.Ext(path) == ".gif" {
+		return "", fmt.Errorf("resizing gifs are not supported")
+	}
+
 	dir := filepath.Dir(path)
 	filename := fmt.Sprintf("%d_%s", width, filepath.Base(path))
 	newpath := filepath.Join(dir, filename)
