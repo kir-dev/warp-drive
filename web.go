@@ -33,6 +33,10 @@ func init() {
 	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
 	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
 
+	mux.Get("/search", http.HandlerFunc(searchPage))
+	mux.Post("/search", http.HandlerFunc(searchHandler))
+
+	mux.Get("/", http.HandlerFunc(root))
 	http.Handle("/", loggerMiddlerware(mux))
 
 	// load templates
@@ -88,6 +92,35 @@ func getImageHandlerWidth(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func searchPage(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "search", nil)
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	value := "%" + r.FormValue("search") + "%"
+	sql := "SELECT title FROM images WHERE title LIKE $1"
+
+	stmt, err := db.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(value)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for rows.Next() {
+		var title string
+		if err := rows.Scan(&title); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf(title, nil)
+	}
+
+	fmt.Fprintf(w, "this stuff is crazy")
 }
 
 func loggerMiddlerware(h http.Handler) http.Handler {
