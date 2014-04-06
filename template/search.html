@@ -5,10 +5,12 @@
 		<input type="submit" value="search"/>
 	</form>
 
-	{{range $index, $element := .}}
+	{{range $hash, $element := .}}
 	<div>
-		<img src="/{{$index}}/300" alt="{{$element}}"/>
-		{{$element.Title}}
+		<a href="/image/{{$hash}}">
+			<img src="/{{$hash}}/300" alt="{{$element.Title}}"/>
+			{{$element.Title}}
+		</a>
 	</div>
 	{{end}}
 
