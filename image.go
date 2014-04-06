@@ -18,6 +18,7 @@ import (
 const (
 	ImageInsertSql  = "INSERT INTO images(title, orig_filename, filepath, height, width, hash, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 	ImageGetPathSql = "SELECT filepath, width FROM images WHERE hash = $1"
+	ImageByHashSql  = "SELECT title, orig_filename, height, width, hash, created_at FROM images WHERE hash = $1"
 )
 
 type imageRecord struct {
@@ -71,6 +72,14 @@ func (img *imageRecord) saveToDisk() error {
 		return err
 	}
 	return ioutil.WriteFile(fullPath, img.content, 0644)
+}
+
+func (img *imageRecord) EmbedCode() string {
+	return fmt.Sprintf(`<img src="//%s/%s" alt="%s">`, config.ServerAddress, img.Hash, img.Title)
+}
+
+func (img *imageRecord) FormattedCreated() string {
+	return img.Created.Format("Jan 2, 2006")
 }
 
 func getImagePath(hash string, width int) (string, error) {
@@ -130,4 +139,22 @@ func resizeImage(path string, width int) (string, error) {
 	}
 
 	return newpath, nil
+}
+
+func getImageByHash(hash string) (*imageRecord, error) {
+	img := imageRecord{}
+	err := getImageByHashStmt.QueryRow(hash).Scan(
+		&img.Title,
+		&img.OriginalFilename,
+		&img.Height,
+		&img.Width,
+		&img.Hash,
+		&img.Created,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &img, nil
 }

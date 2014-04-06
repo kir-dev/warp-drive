@@ -1,0 +1,35 @@
+{{define "content"}}
+<div id="#image-container">
+    <h1>Image details</h1>
+    <div>
+        <a href="/{{.Hash}}">
+            <img src="/{{.Hash}}/300">
+        </a>
+        Click the image to see the full-size version.
+    </div>
+    <div class="embed-image">
+        Copy this code to embed in your site
+        <code class="embed-code">
+            {{.EmbedCode}}
+        </code>
+    </div>
+    <div class="image-meta">
+        <div>
+            <span>Title:</span>
+            <span>{{.Title}}</span>
+        </div>
+        <div>
+            <span>Dimensions:</span>
+            <span>{{.Width}}x{{.Height}} px</span>
+        </div>
+        <div>
+            <span>Original filename:</span>
+            <span>{{.OriginalFilename}}</span>
+        </div>
+        <div>
+            <span>Created at:</span>
+            <span>{{.FormattedCreated}}</span>
+        </div>
+    </div>
+</div>
+{{end}}

@@ -36,6 +36,7 @@ func init() {
 	mux.Post("/upload", http.HandlerFunc(uploadHandler))
 
 	mux.Get("/search", http.HandlerFunc(searchPage))
+	mux.Get("/image/:hash", http.HandlerFunc(imagePage))
 
 	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
 	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
@@ -138,6 +139,17 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderTemplate(w, "search", data)
+}
+
+func imagePage(w http.ResponseWriter, r *http.Request) {
+	img, err := getImageByHash(r.URL.Query().Get(":hash"))
+	if err != nil {
+		// TODO: render proper 404 error page for missing images
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	renderTemplate(w, "image", img)
 }
 
 func loggerMiddlerware(h http.Handler) http.Handler {
