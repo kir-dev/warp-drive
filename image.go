@@ -21,22 +21,22 @@ const (
 )
 
 type imageRecord struct {
-	title            string
-	originalFilename string
-	height           int
-	width            int
-	hash             string
-	created          time.Time
+	Title            string
+	OriginalFilename string
+	Height           int
+	Width            int
+	Hash             string
+	Created          time.Time
 
 	content []byte
 }
 
 func (img *imageRecord) path() string {
 	return fmt.Sprintf("%s/%s/%s%s",
-		img.hash[0:2],
-		img.hash[0:8],
-		img.hash,
-		filepath.Ext(img.originalFilename))
+		img.Hash[0:2],
+		img.Hash[0:8],
+		img.Hash,
+		filepath.Ext(img.OriginalFilename))
 }
 
 func (img *imageRecord) save() error {
@@ -55,12 +55,12 @@ func (img *imageRecord) save() error {
 		return err2
 	}
 
-	log.Printf("Saved image. Filename: %s, hash: %s", img.originalFilename, img.hash)
+	log.Printf("Saved image. Filename: %s, hash: %s", img.OriginalFilename, img.Hash)
 	return nil
 }
 
 func (img *imageRecord) saveToDb() error {
-	_, err := imageInsertStmt.Exec(img.title, img.originalFilename, img.path(), img.height, img.width, img.hash, img.created)
+	_, err := imageInsertStmt.Exec(img.Title, img.OriginalFilename, img.path(), img.Height, img.Width, img.Hash, img.Created)
 	return err
 }
 

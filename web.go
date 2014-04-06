@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	_ "time"
 )
 
 const (
@@ -22,6 +23,10 @@ var (
 	templates map[string]*template.Template
 )
 
+const (
+	SearchImageByTitleStmt = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
+)
+
 func init() {
 	mux := pat.New()
 
@@ -30,9 +35,12 @@ func init() {
 	mux.Get("/upload", http.HandlerFunc(uploadPage))
 	mux.Post("/upload", http.HandlerFunc(uploadHandler))
 
+	mux.Get("/search", http.HandlerFunc(searchPage))
+
 	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
 	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
 
+	mux.Get("/", http.HandlerFunc(root))
 	http.Handle("/", loggerMiddlerware(mux))
 
 	// load templates
@@ -88,6 +96,48 @@ func getImageHandlerWidth(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func searchPage(w http.ResponseWriter, r *http.Request) {
+
+	value := r.URL.Query().Get("q")
+	searchterm := "%" + value + "%"
+
+	data := make(map[string]imageRecord)
+
+	if value == "" {
+		renderTemplate(w, "search", data)
+		return
+	}
+
+	rows, err := searchImageByTitleStmt.Query(searchterm)
+	if err != nil {
+		log.Printf("Error when executing the query: %v", err)
+		fmt.Fprintf(w, "Sorry something went wrong...")
+		return
+	}
+
+	/*
+		title            string
+		originalFilename string
+		height           int
+		width            int
+		hash             string
+	*/
+
+	for rows.Next() {
+		var image imageRecord
+
+		if err := rows.Scan(&image.Title, &image.OriginalFilename, &image.Height, &image.Width, &image.Hash); err != nil {
+			log.Printf("Error: %v", err)
+		} else {
+			log.Printf("matched query: " + image.Hash + " " + image.Title)
+
+			data[image.Hash] = image
+		}
+	}
+
+	renderTemplate(w, "search", data)
 }
 
 func loggerMiddlerware(h http.Handler) http.Handler {
