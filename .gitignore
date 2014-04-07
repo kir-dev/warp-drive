@@ -6,3 +6,6 @@ warp-drive.exe
 
 # never commit your own config
 config.json
+
+# ignore distributions
+dist/

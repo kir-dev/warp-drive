@@ -8,10 +8,14 @@ warp: *.go
 fmt:
 	go fmt ./...
 
-.PHONY: clean
 clean:
 	rm -f warp
 	go clean -r
 
 test:
 	godep go test
+
+dist:
+	./scripts/dist.sh
+
+.PHONY: clean dist
