@@ -142,4 +142,23 @@ so you must have `godep` installed in your `PATH`.
 Use the [godep workflow](https://github.com/tools/godep#add-or-update-a-dependency)
 and use the `-copy=false` option on save.
 
+## Releasing
+
+For versioning we try to follow the rules of [semver](http://semver.org/). This
+means that every release has a `MAJOR.MINOR.PATCH` versioning scheme.
+
+1. Create a new distribution archive
+
+        $ ./scripts/dist.sh MAJOR.MINOR.PATCH
+
+2. Tag the new release
+
+        $ git tag -a vMAJOR.MINOR.PATCH
+
+    In the tag message describe the new release briefly.
+
+3. Prepare a new [github release][2]. Describe the new release in detail and
+upload the distribution archive for the release.
+
 [1]: https://github.com/kir-dev/warp-drive/pulls
+[2]: https://github.com/blog/1547-release-your-software
