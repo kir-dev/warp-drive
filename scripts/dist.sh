@@ -2,8 +2,6 @@
 # usage ./dist.sh [version]
 # if version is not set, using the latest commit's abbreviated hash
 
-TEMPDIR=/tmp/warp-dist
-
 DISTHASH=$(git rev-parse HEAD | cut -c1-10)
 
 if [ -n "$1" ]; then
@@ -14,6 +12,9 @@ fi
 
 DISTNAME="warp-$DISTVER.tar.gz"
 DISTPATH="dist"
+
+APPTEMPDIR=warp-$DISTVER
+TEMPDIR="/tmp/$APPTEMPDIR"
 
 # test first, failing test means no dist
 make -s test > /dev/null
@@ -49,6 +50,6 @@ fi
 # create dist directory
 mkdir -p $DISTPATH
 # create dist archive
-tar -C $TEMPDIR -czf $DISTPATH/$DISTNAME .
+tar -C /tmp -czf $DISTPATH/$DISTNAME $APPTEMPDIR
 
 rm -r $TEMPDIR
