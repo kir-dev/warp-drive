@@ -1,10 +1,18 @@
 #!/bin/bash
-# usage ./dist.sh
+# usage ./dist.sh [version]
+# if version is not set, using the latest commit's abbreviated hash
 
 TEMPDIR=/tmp/warp-dist
 
 DISTHASH=$(git rev-parse HEAD | cut -c1-10)
-DISTNAME="warp-dist-$DISTHASH.tar.gz"
+
+if [ -n "$1" ]; then
+    DISTVER=$1
+else
+    DISTVER=$DISTHASH
+fi
+
+DISTNAME="warp-$DISTVER.tar.gz"
 DISTPATH="dist"
 
 # test first, failing test means no dist
@@ -27,7 +35,16 @@ mkdir -p $TEMPDIR/config
 # copy resources to temp dir
 cp -r warp static/ template/ $TEMPDIR
 cp config/config.json.dist $TEMPDIR/config/
-cp scripts/sql/*.sql $TEMPDIR/config/
+# copy schema.sql for clean installs
+cp scripts/sql/schema.sql $TEMPDIR/config/
+
+# concatenate & copy schema changes for this release
+UPGRADESQL=$TEMPDIR/config/upgrade.sql
+git diff --name-status $(git describe --abbrev=0) HEAD | grep -E "^A.*\.sql$" | cut -c3- | xargs cat > $UPGRADESQL
+# delete if empty
+if [ ! -s $UPGRADESQL ]; then
+    rm $UPGRADESQL
+fi
 
 # create dist directory
 mkdir -p $DISTPATH
