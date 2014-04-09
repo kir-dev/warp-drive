@@ -24,8 +24,9 @@ var (
 )
 
 const (
-	SearchImageByTitleStmt = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
-	WarpRealm              = "warp"
+	SearchImageByTitleSql = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
+	RecentImageSql        = "SELECT title, orig_filename, height, width, hash FROM images"
+	WarpRealm             = "warp"
 )
 
 func init() {
@@ -37,6 +38,7 @@ func init() {
 	mux.Post("/upload", basicAuth(WarpRealm, http.HandlerFunc(uploadHandler)))
 
 	mux.Get("/search", http.HandlerFunc(searchPage))
+	mux.Get("/recent", basicAuth(WarpRealm, http.HandlerFunc(recentPage)))
 	mux.Get("/image/:hash", http.HandlerFunc(imagePage))
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
@@ -153,6 +155,32 @@ func imagePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderTemplate(w, "image", img)
+}
+
+func recentPage(w http.ResponseWriter, r *http.Request) {
+	data := make(map[string]imageRecord)
+
+	rows, err := recentImageStmt.Query()
+	if err != nil {
+		log.Printf("Error when executing the query: %v", err)
+		fmt.Fprintf(w, "Sorry something went wrong...")
+		return
+	}
+
+	for rows.Next() {
+		var image imageRecord
+
+		if err := rows.Scan(&image.Title, &image.OriginalFilename, &image.Height, &image.Width, &image.Hash); err != nil {
+			log.Printf("Error: %v", err)
+		} else {
+			log.Printf("matched query: " + image.Hash + " " + image.Title)
+
+			data[image.Hash] = image
+		}
+	}
+
+	renderTemplate(w, "recent", data)
+
 }
 
 func loggerMiddlerware(h http.Handler) http.Handler {

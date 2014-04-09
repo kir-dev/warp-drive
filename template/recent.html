@@ -1,0 +1,12 @@
+{{define "content"}}
+
+{{range $hash, $element := .}}
+<div class="jumbotron">
+	<a href="/image/{{$hash}}">
+		<img src="/{{$hash}}/300" alt="{{$element.Title}}"/>
+		{{$element.Title}}
+	</a>
+</div>
+{{end}}
+
+{{end}}
