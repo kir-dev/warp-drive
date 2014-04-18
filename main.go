@@ -18,6 +18,7 @@ var (
 	getImagePathStmt       *sql.Stmt
 	searchImageByTitleStmt *sql.Stmt
 	getImageByHashStmt     *sql.Stmt
+	recentImageStmt        *sql.Stmt
 )
 
 func main() {
@@ -61,7 +62,7 @@ func createPreparedStmts() {
 		log.Fatal(err)
 	}
 
-	searchImageByTitleStmt, err = db.Prepare(SearchImageByTitleStmt)
+	searchImageByTitleStmt, err = db.Prepare(SearchImageByTitleSql)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,6 +71,12 @@ func createPreparedStmts() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	recentImageStmt, err = db.Prepare(RecentImageSql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
 
 func setLogOutput(logfile string) {

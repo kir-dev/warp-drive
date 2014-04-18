@@ -24,8 +24,9 @@ var (
 )
 
 const (
-	SearchImageByTitleStmt = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
-	WarpRealm              = "warp"
+	SearchImageByTitleSql = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
+	RecentImageSql        = "SELECT title, orig_filename, height, width, hash, created_at FROM images ORDER BY created_at LIMIT 5"
+	WarpRealm             = "warp"
 )
 
 func init() {
@@ -52,7 +53,30 @@ func init() {
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index", nil)
+
+	data := make(map[string]imageRecord)
+
+	rows, err := recentImageStmt.Query()
+	if err != nil {
+		log.Printf("Error when executing the query: %v", err)
+		fmt.Fprintf(w, "Sorry something went wrong...")
+		return
+	}
+
+	for rows.Next() {
+		var image imageRecord
+
+		if err := rows.Scan(&image.Title, &image.OriginalFilename, &image.Height, &image.Width, &image.Hash, &image.Created); err != nil {
+			log.Printf("Error: %v", err)
+		} else {
+			log.Printf("matched query: " + image.Hash + " " + image.Title)
+
+			data[image.Hash] = image
+		}
+	}
+
+	renderTemplate(w, "index", data)
+
 }
 
 func uploadPage(w http.ResponseWriter, r *http.Request) {
@@ -120,14 +144,6 @@ func searchPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Sorry something went wrong...")
 		return
 	}
-
-	/*
-		title            string
-		originalFilename string
-		height           int
-		width            int
-		hash             string
-	*/
 
 	for rows.Next() {
 		var image imageRecord
