@@ -1,26 +1,36 @@
 {{define "content"}}
-<div class="jumbotron"> 
-<h1>Warp-Drive</h1>
+	<div class="jumbotron"> 
+	<h1>Warp-Drive</h1>
 
-<p>
-Warp-Drive image hosting service. :)
-</p>
+	<p>
+	Warp-Drive image hosting service. :)
+	</p>
 
-<h2>Looking for an image? Search for it...</h2>
+	<h2>Looking for an image? Search for it...</h2>
 
-<form method="GET" action="/search" role="form">
-	<div class="form-group">
-		<div class="col-xs-4">
-			<input id="search-field" type="text" name="q" class="form-control"/>
+	<form method="GET" action="/search" role="form">
+		<div class="form-group">
+			<div class="col-xs-4">
+				<input id="search-field" type="text" name="q" class="form-control"/>
+			</div>
+			<div class="clearfix"></div>
 		</div>
-		<div class="clearfix"></div>
-	</div>
-	<div class="form-group">
-		<div class="col-xs-4">
-			<input type="submit" value="search" class="btn btn-lg btn-primary btn-block"/>
+		<div class="form-group">
+			<div class="col-xs-4">
+				<input type="submit" value="search" class="btn btn-lg btn-primary btn-block"/>
+			</div>
+			<div class="clearfix"></div>
 		</div>
-		<div class="clearfix"></div>
+	</form>
 	</div>
-</form>
-<div>
+
+	{{range $hash, $element := .}}
+		<div class="jumbotron">
+			<a href="/image/{{$hash}}">
+				<img src="/{{$hash}}/300" alt="{{$element.Title}}"/>
+				{{$element.Title}}
+			</a>
+		</div>
+	{{end}}
+
 {{end}}
