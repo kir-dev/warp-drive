@@ -1,8 +1,6 @@
 {
     "uploadPath": "/base/path/to/upload/images",
     "serverAddress": "example.com",
-    "user": "admin",
-    "password": "",
     "db": {
         "name": "warp",
         "user": "warp",

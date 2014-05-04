@@ -21,8 +21,6 @@ type dbConfiguration struct {
 type configuration struct {
 	UploadPath    string
 	ServerAddress string
-	User          string
-	Password      string
 	Db            dbConfiguration
 	SessionSecret string
 	ClientId      string // auth.sch client id
@@ -67,8 +65,5 @@ func loadConfiguration(configPath string) configuration {
 		log.Fatal(err)
 	}
 
-	if config.User == "" || config.Password == "" {
-		log.Fatal("user and password are required in the config")
-	}
 	return config
 }

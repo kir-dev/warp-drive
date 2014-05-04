@@ -37,7 +37,7 @@ func main() {
 	createSessionStore()
 
 	log.Printf("Started on %s port in %s mode", *port, env)
-	http.ListenAndServe(*port, nil)
+	log.Fatal(http.ListenAndServe(*port, registerRoutes()))
 }
 
 func initDb() {
