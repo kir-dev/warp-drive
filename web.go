@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/bmizerany/pat"
+	"github.com/gorilla/context"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	_ "time"
 )
 
 const (
@@ -26,30 +26,33 @@ var (
 const (
 	SearchImageByTitleSql = "SELECT title, orig_filename, height, width, hash FROM images WHERE LOWER(title) LIKE $1"
 	RecentImageSql        = "SELECT title, orig_filename, height, width, hash, created_at FROM images ORDER BY created_at LIMIT 5"
-	WarpRealm             = "warp"
 )
 
-func init() {
+func registerRoutes() http.Handler {
+	h := http.NewServeMux()
 	mux := pat.New()
 
 	// register routes
 	mux.Get("/", http.HandlerFunc(root))
-	mux.Get("/upload", basicAuth(WarpRealm, http.HandlerFunc(uploadPage)))
-	mux.Post("/upload", basicAuth(WarpRealm, http.HandlerFunc(uploadHandler)))
+	mux.Get("/upload", oauthWrapper(http.HandlerFunc(uploadPage)))
+	mux.Post("/upload", oauthWrapper(http.HandlerFunc(uploadHandler)))
+	mux.Get("/auth", http.HandlerFunc(oauthRedirectHandler))
 
 	mux.Get("/search", http.HandlerFunc(searchPage))
 	mux.Get("/image/:hash", http.HandlerFunc(imagePage))
-
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
 	mux.Get("/:hash", http.HandlerFunc(getImageHandler))
 	mux.Get("/:hash/:width", http.HandlerFunc(getImageHandlerWidth))
 
 	mux.Get("/", http.HandlerFunc(root))
-	http.Handle("/", loggerMiddlerware(mux))
+
+	h.Handle("/", loggerMiddlerware(mux))
+	h.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
 	// load templates
 	templates = loadTemplates()
+
+	return context.ClearHandler(h)
 }
 
 func root(w http.ResponseWriter, r *http.Request) {

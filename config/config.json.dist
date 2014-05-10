@@ -1,13 +1,16 @@
 {
     "uploadPath": "/base/path/to/upload/images",
     "serverAddress": "example.com",
-    "user": "admin",
-    "password": "",
     "db": {
         "name": "warp",
         "user": "warp",
         "pass": "<pass>",
         "port": 5432,
         "pool": 5
-    }
+    },
+    "sessionSecret": "<generate one with 'make secret'>",
+    "clientId": "warp",
+    "clientSecret": "<secret here>",
+    "secure": true,
+    "groupId": <groupid>
 }

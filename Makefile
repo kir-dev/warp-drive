@@ -15,3 +15,7 @@ clean:
 
 test:
 	godep go test
+
+.PHONY: secret
+secret:
+	@openssl rand -base64 64 | sed ':a;N;$$!ba;s/\n//g'
