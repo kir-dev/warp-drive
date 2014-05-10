@@ -57,6 +57,8 @@ func isAuthorized(sess *session) bool {
 	res, err := http.Get("https://auth.sch.bme.hu/api/profile/?access_token=" + sess.accessToken())
 	if err != nil {
 		log.Printf("Error while getting profile information: %s", err)
+		// error while getting group info -> authorization fails
+		return false
 	}
 
 	defer res.Body.Close()
