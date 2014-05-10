@@ -89,6 +89,7 @@ func oauthRedirectHandler(w http.ResponseWriter, r *http.Request) {
 
 	ustate := sess.userState()
 	if r.FormValue("state") != ustate {
+		log.Printf("Expected user state for OAuth: %s, got: %s", r.FormValue("state"), ustate)
 		http.Error(w, "Wrong user state", http.StatusBadRequest)
 		return
 	}
