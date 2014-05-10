@@ -115,6 +115,16 @@ Currently the config file contains the following options:
 * `serverAddress`: the host (including port if necessary)
 * `user`, `password`: the user name and password for uploading images
 * `db`: connection information for the database
+* `sessionSecret`: a random key for signing the session cookies
+* `clientId`: OAuth (auth.sch) client id
+* `clientSecret`: OAuth (auth.sch) client secret
+* `secure`: set it to true and session cookies are only transmitted via https
+* `groupId`: restric upload access to members of a specific group. Set it to `0` for no restriction.
+
+### OAuth configuration
+
+For development register a new application at [auth.sch.bme.hu][3] and use the provided
+credentials. For the redirect address give something like `http://localhost:8080/auth`.
 
 ## Contributing
 
@@ -162,3 +172,4 @@ upload the distribution archive for the release.
 
 [1]: https://github.com/kir-dev/warp-drive/pulls
 [2]: https://github.com/blog/1547-release-your-software
+[3]: https://auth.sch.bme.hu/console/index

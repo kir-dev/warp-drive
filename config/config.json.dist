@@ -9,7 +9,7 @@
         "pool": 5
     },
     "sessionSecret": "<generate one with 'make secret'>",
-    "clientId": "warp",
+    "clientId": "<client id>",
     "clientSecret": "<secret here>",
     "secure": true,
     "groupId": <groupid>
