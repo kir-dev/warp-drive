@@ -1,5 +1,5 @@
 {
-	"ImportPath": "warp-drive",
+	"ImportPath": "github.com/kir-dev/warp-drive",
 	"GoVersion": "go1.2",
 	"Deps": [
 		{
